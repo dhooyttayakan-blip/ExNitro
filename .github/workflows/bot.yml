@@ -1,0 +1,22 @@
+name: Run ExNitro Bot
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'  # jalan tiap 5 menit (bisa diubah)
+  workflow_dispatch:        # biisa jalan manual
+
+jobs:
+  bot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      - name: Install dependencies
+        run: pip install discord.py requests
+      - name: Run bot
+        run: python ExNitro.py
+        env:
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
