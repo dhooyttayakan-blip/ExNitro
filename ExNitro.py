@@ -1,6 +1,4 @@
-# ExNitro - Auto Hunt Gift Link (tanpa auto-claim)
-# Ganti 'TOKEN_BOT_KAMU' dengan token bot dari developer portal
-
+import os
 import discord
 import requests
 import random
@@ -8,12 +6,14 @@ import string
 import asyncio
 from discord.ext import commands
 
-os.getenv('BOT_TOKEN')
-PREFIX = '!'
+BOT_TOKEN = os.getenv('BOT_TOKEN')
+if not BOT_TOKEN:
+    print("BOT_TOKEN not set")
+    exit(1)
 
 intents = discord.Intents.default()
 intents.message_content = True
-bot = commands.Bot(command_prefix=PREFIX, intents=intents)
+bot = commands.Bot(command_prefix='!', intents=intents)
 bot.remove_command('help')
 
 def generate_code():
@@ -30,26 +30,23 @@ def check_code(code):
 @bot.event
 async def on_ready():
     print(f'ExNitro siap sebagai {bot.user}')
-    print('Mode: Gift hunter (tanpa auto-claim)')
 
 @bot.command(name='gifthunt')
 async def gifthunt(ctx):
-    """Loop cari kode nitro, kalau nemu kirim link gift ke channel."""
-    await ctx.send("🔍 **Gift hunt dimulai.** Bot akan mencari kode nitro valid dan mengirim link gift-nya.")
+    await ctx.send("🔍 Mencari nitro...")
     count = 0
     while True:
         code = generate_code()
         count += 1
         if check_code(code):
-            gift_link = f"https://discord.gift/{code}"
-            await ctx.send(f"🎁 **KODE NITRO VALID DITEMUKAN!**\n{gift_link}\n*Bot berhenti mencari.*")
+            await ctx.send(f"🎁 **KODE VALID!** https://discord.gift/{code}\nBerhenti mencari.")
             break
         if count % 100 == 0:
-            await ctx.send(f"🔍 Sudah mencoba {count} kode...")
+            await ctx.send(f"🔍 {count} kode dicoba...")
         await asyncio.sleep(0.05)
 
 @bot.command(name='help')
 async def help_cmd(ctx):
-    await ctx.send("**ExNitro Gift Hunter**\n`!gifthunt` - Cari nitro sampai dapat, hasilnya link gift dikirim ke channel.")
+    await ctx.send("**ExNitro**\n`!gifthunt` - cari nitro sampai dapat link gift.")
 
 bot.run(BOT_TOKEN)
